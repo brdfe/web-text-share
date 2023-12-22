@@ -1,0 +1,11 @@
+version: "3"
+services:
+  local-web-share:
+    image: node:21-alpine
+    ports:
+      - "80:80"
+    restart: always
+    command: node index.js
+    working_dir: /var/app
+    volumes:
+      - C:\\Users\\br\\Desktop\\local-web-share:/var/app

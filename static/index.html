@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="form">
+        <input type="text" name="text" placeholder="paste here" />
+        <button type="submit">Submit</button>
+    </form>
+    <div id="list-container">
+        
+    </div>
+    <script>
+        let texts = [];
+        let listContainer = document.querySelector('#list-container');
+        const form = document.querySelector('#form');
+
+        function populateList() {
+            const listEl = document.createElement('div');
+            listEl.id = 'list-container'
+            texts.forEach(text => {
+                const pNode = document.createElement('p');
+                pNode.textContent = text;
+                listEl.appendChild(pNode);
+            });
+            listContainer.replaceWith(listEl);
+            listContainer = listEl;
+        }
+
+        fetch('/text', { headers: { "Content-Type": "application/json" } })
+            .then(res => res.json())
+            .then(data => {
+                texts = data;
+                populateList();
+            });
+        
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            var formData = new FormData(form);
+            const res = await fetch(
+                '/text', 
+                { 
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ text: formData.get('text') })
+                }
+            );
+            texts = await res.json();
+            populateList();
+        });
+    </script>
+</body>
+</html>
