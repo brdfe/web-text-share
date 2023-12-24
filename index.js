@@ -1,19 +1,20 @@
 const path = require('path');
 const express = require('express')
+const { getTexts, addText } = require('./db');
+
 const app = express()
 const port = 80;
 
 app.use(express.json());
 
-const texts = [];
-
-app.post('/text', (req, res) => {
+app.post('/text', async (req, res) => {
     const { text } = req.body;
-    texts.push(text);
-    res.json(texts);
+    await addText(text);
+    res.json(await getTexts());
 });
 
-app.get('/text', (_, res) => {
+app.get('/text', async (_, res) => {
+    const texts = await getTexts()
     res.json(texts);
 });
 

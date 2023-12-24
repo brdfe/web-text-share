@@ -23,7 +23,7 @@
             listEl.id = 'list-container'
             texts.forEach(text => {
                 const pNode = document.createElement('p');
-                pNode.textContent = text;
+                pNode.textContent = text.text;
                 listEl.appendChild(pNode);
             });
             listContainer.replaceWith(listEl);
@@ -33,7 +33,12 @@
         fetch('/text', { headers: { "Content-Type": "application/json" } })
             .then(res => res.json())
             .then(data => {
-                texts = data;
+                const sortedTexts = data.sort((a, b) => {
+                    const left = new Date(a.created_at);
+                    const right = new Date(b.created_at);
+                    return left < right;
+                });
+                texts = sortedTexts;
                 populateList();
             });
         
@@ -50,7 +55,14 @@
                     body: JSON.stringify({ text: formData.get('text') })
                 }
             );
-            texts = await res.json();
+            const data = await res.json();
+            const sortedTexts = data.sort((a, b) => {
+                const left = new Date(a.created_at);
+                const right = new Date(b.created_at);
+                return left < right;
+            });
+            texts = sortedTexts;
+            form.reset();
             populateList();
         });
     </script>
